@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function lazy(f) {
+      class Lazy extends React.Component{
+        constructor(props) {
+          super(props)
+          this.state = {
+            loading:true
+          }
+          f().then(Comp => {
+            this.Comp = Comp
+            this.setState({
+              loading:false
+            })
+          })
+        }
+        render() {
+          if(this.state.loading) {
+            return <span style={{color:'red'}}>...loading</span>
+          } else {
+            var Comp = this.Comp
+            var {children, forwardRef,...props} = this.props
+            return <Comp ref={forwardRef} {...props}> {children} </Comp>
+          }
+        }
+      }
+      return React.forwardRef((props, ref) => {
+        return <Lazy {...props} forwardRef={ref} />
+      })
+    }
+    var SomeLazyComp = lazy(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(class Foo extends React.Component {
+            render() {
+              return <div>i m foo</div>
+            }
+          })
+        },1000)
+      })
+    })
+    class App extends React.Component{
+      constructor(props) {
+        super(props)
+        window.ref1 = React.createRef()
+        this.state = {
+          showing: false
+        }
+      }
+      getShowing = () => {
+        this.setState({
+          showing: true
+        })
+      }
+      render() {
+        return (
+          <div>
+            <p onClick={ this.getShowing }>hello</p>
+            {this.state.showing &&
+              <SomeLazyComp  ref={window.ref1}/>
+            }
+          </div>
+        )
+      }
+    }
+    ReactDOM.render(
+      <App />,
+      document.getElementById('root')
+    )
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>todoApp</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+  <!-- <script src="https://unpkg.com/immer"></script> -->
+  <script src="immer.umd.production.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const produce = immer.produce
+    class TodoItem extends React.Component{
+      constructor(props) {
+        super(props)
+      }
+      shouldComponentUpdate(props,state) {
+        if(props.todo === this.props.todo) {
+          return false
+        }
+        return true
+      }
+      render() {
+        return (
+          <li>
+            <input type="checkbox" checked={ this.props.todo.done } onChange={ () => this.props.ontoggleTodoStatus() } /> 
+            <span>{ this.props.todo.content }</span>
+            <button onClick={ () => this.props.ondeleteTodo() }>x</button>
+          </li>
+        )
+      }
+    }
+
+    class TodoApp extends React.Component{
+      constructor(props) {
+        super(props)
+        this.state = {
+          categary:'all',
+          todos:[{
+            content:'eat',
+            done:false,
+          },{
+            content:'drink',
+            done:true,
+          },{
+            content:'sleep',
+            done:false, 
+          }]
+        }
+      }
+      leftcount() {
+        return this.state.todos.filter(it => !it.done).length
+      }
+      isAllSelected() {
+        return this.state.todos.every(it => it.done)
+      }
+      hasCompelated() {
+        return this.state.todos.some(it => it.done)
+      }
+      
+      toggleTodoStatus(todo) {
+        this.setState({
+          todos: this.state.todos.map(it => {
+            if(it == todo) {
+              return {
+                ...it,
+                done: !it.done
+              }
+            } else {
+              return it
+            }
+          })
+        })
+      }
+      toggleTodoStatus2(idx) {
+        this.setState(produce(state => {
+          state.todos[idx].done = !this.state.todos[idx].done
+          }))
+        }
+      // toggleTodoStatus2(idx) {
+      //   this.setState({
+      //     todos: this.state.todos.map(it => {
+      //       if(it == this.state.todos[idx]) {
+      //         return {
+      //           ...it,
+      //           done: !it.done
+      //         }
+      //       } else {
+      //         return it
+      //       }
+      //     })
+      //   })
+      // }
+      All() {
+        this.setState({
+          categary: this.state.categary = 'all'
+        })
+      }
+      Active() {
+        this.setState(produce(state => {
+          state.categary = (this.state.categary = 'active')
+        }))
+      }
+      Compelate() {
+        this.setState({
+          categary: this.state.categary = 'compelate'
+        })
+      }
+      
+      toggleAllSelection = () => {
+        if(this.isAllSelected()) {
+          this.setState(produce(state => {
+            state.todos.forEach(todo => {
+              todo.done = false
+            })
+          }))
+        } else {
+          this.setState(produce(state => {
+            state.todos.forEach(todo => {
+              todo.done = true 
+            })
+          }))
+        }
+      }
+      clearCompleted = () => {
+        this.setState(produce(state => {
+          state.todos = this.state.todos.filter(it => !it.done)
+        }))
+      }
+      addTodo = (e) => {
+        var text = e.target.value.trim()
+        if(e.keyCode == 13 && text) {
+          this.setState(produce(state => {
+            state.todos.push({
+              content:text,
+              done:false
+            })
+          }))
+          e.target.value = ''
+        }
+      }
+
+      deleteTodo(todo) {
+        this.setState(produce(state => {
+          state.todos = this.state.todos.filter(it => it !== todo)
+        })) 
+      }
+
+      deleteTodo2(idx) {
+        this.setState(produce(state => {
+          state.todos.splice(idx, 1)
+        }))
+      }
+      
+      render() {
+        return (
+          <div>
+            <h1>TodoApp</h1>
+            <div>
+              <input type="checkbox" checked={ this.isAllSelected() } onChange={ this.toggleAllSelection } />
+              <input type="text" onKeyUp={this.addTodo}/>
+            </div>
+            <ul>
+              {
+                this.state.todos.map((todo, idx) => {
+                  return <TodoItem key={todo.content} todo={todo} ondeleteTodo={() => this.deleteTodo(todo) } ontoggleTodoStatus={() => this.toggleTodoStatus(todo) } />
+                })
+              }
+            </ul>
+            <div>
+              <span>{ this.leftcount() } item(s) left</span>
+              <label><input type="radio" checked={ this.state.categary == 'all' } onChange={ () => this.All() } />All</label>
+              <label><input type="radio" checked={ this.state.categary == 'active' } onChange={ () => this.Active() } />Active</label>
+              <label><input type="radio" checked={ this.state.categary == 'compelate' } onChange={ () => this.Compelate() } />Compelate</label>
+              {this.hasCompelated() &&
+                <button onClick={ this.clearCompleted }>Clear Completed</button>
+              }
+            </div>
+          </div>
+        )
+      }
+    }
+    class TodoApp1 extends TodoApp {
+      render() {
+        return (
+          <div style={{border:'2px solid'}}>
+            {super.render()}  
+          </div>
+        )
+      }
+      // 继承组件写法
+    }
+    class TodoApp2 extends React.Component {
+      render() {
+        return (
+          <div style={{border:'2px solid black',color:'red' }}>
+            <TodoApp />
+          </div>
+        )
+      }
+        // 组合组件写法
+    }
+    ReactDOM.render(
+      <div>
+        <TodoApp1 />
+        <TodoApp2 />
+        <TodoApp />
+      </div>,
+      document.getElementById('root')
+    );
+
+  </script>
+</body>
+</html>

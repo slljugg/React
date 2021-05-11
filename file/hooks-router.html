@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="react-router-dom.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    var {
+      HashRouter,
+      Switch,
+      Route,
+      Link,
+      withRouter
+    } = ReactRouterDOM
+
+    function About() {
+      return (
+        <div>
+          <div>About</div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/about/me">me</Link>  
+              </li>
+              <li>
+                <Link to="/about/he">he</Link>  
+              </li>
+              <li>
+                <Link to="/about/she">she</Link>  
+              </li>
+            </ul>
+          </nav>
+          <div>
+            <Switch>
+              <Route path="/about/me">
+                <div>me</div>
+              </Route>
+              <Route path="/about/he">
+                <div>he</div>
+              </Route>
+              <Route path="/about/she">
+                <div>she</div>
+              </Route>
+            </Switch>
+          </div>
+        </div>
+        
+      )
+    }
+    function Home() {
+      return <div>Home</div>
+    }
+    function Users() {
+      return (
+        <div>
+          <Link to="/user/1">页面1</Link>
+          <Link to="/user/2">页面2</Link>
+          <Link to="/user/3">页面3</Link>
+          <Link to="/user/4">页面4</Link>
+        </div>
+      )
+    }
+    var User = withRouter(function User(props) {
+      return (
+        <div>
+          <button onClick={() => props.history.go(-1)}>返回</button>
+          <div onClick={() => {props.history.push('/user/' + (+props.match.params.id + 1))}}>
+            User: {JSON.stringify(props)}
+          </div>
+        </div>
+      )  
+    })
+    function App() {
+      return (
+        <HashRouter>
+          <div>
+            <nav>
+              <ul>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/about">About</Link>
+                </li>
+                <li>
+                  <Link to="/users">Users</Link>
+                </li>
+              </ul>
+            </nav>
+
+            {/* A <Switch> looks through its children <Route>s and
+                renders the first one that matches the current URL. */}
+            <Switch>
+              <Route path="/about">
+                <About />
+              </Route>
+              <Route path="/users">
+                <Users />
+              </Route>
+              <Route path="/user/:id">
+                <User />
+              </Route>
+              <Route path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </div>
+        </HashRouter>
+      )
+    }
+
+    ReactDOM.render(
+      <div>
+        <App />
+      </div>,
+      document.getElementById('root')
+    );
+
+  </script>
+</body>
+</html>

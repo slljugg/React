@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // class HasPortal extends React.Component{
+    //   constructor(props){
+    //     super(props)
+    //     this.state = {
+    //       showWelcome:true
+    //     }
+    //   }
+    //   showDeletePanel = () => {
+    //     this.setState({
+    //       deleting:true
+    //     })
+    //   }
+    //   createPortalPanel() {
+    //     return ReactDOM.createPortal((
+    //       <div>
+    //         are you sure to delete?
+    //         <button onClick={ this.handleDelete }>delete</button>
+    //         <button onClick={ this.handleCancel }>cancel</button>
+    //       </div>
+    //     ),document.body)
+    //   }
+    //   render() {
+    //     return (
+    //       <div>
+    //         {this.state.deleting && 
+    //           this.createPortalPanel()
+    //         }
+    //         <button onClick={ this.showDeletePanel }>delete</button>
+    //         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora optio facere libero? Voluptatem, quo iste deserunt perspiciatis tempora corrupti aliquid, hic a ea non cum sapiente vitae deleniti inventore atque.</p>
+    //       </div>
+    //     )
+    //   }
+    // }
+    class HasPortal extends React.Component{
+      constructor(props) {
+        super(props) 
+        this.state = {
+          a: 1
+        }
+      }
+      showDeletePanel = () => {
+        this.setState({
+          showDeleting:true
+        })
+      }
+      createPortalPanel() {
+        return ReactDOM.createPortal((
+          <div>
+            are you sure to delete ? 
+            <button>delete</button>  
+            <button>cancel</button>
+          </div>
+        ),document.body)
+      }
+      render() {
+        return (
+          <div>
+            {this.state.showDeleting &&
+              this.createPortalPanel()
+            }
+            <button onClick={ this.showDeletePanel }>delete</button>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla commodi architecto obcaecati ad quia amet ducimus iusto, ullam iste sint, consequatur quisquam ea vel, nostrum perferendis fuga minus exercitationem excepturi?</p>  
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(
+      <HasPortal />,
+      document.getElementById('root')
+    )
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    class EroorBoundary extends React.Component{
+      constructor(props){
+        super(props)
+        this.state = {
+          showWelcome:true
+        }
+      }
+      componentDidCatch(error) {
+        this.setState({
+          showWelcome:false
+        })
+      }
+      render() {
+        return (
+          <div>
+            <p>hello</p>
+            {this.state.showWelcome ?
+              <Welcome />
+              :
+              <p>error when Welcome rendering component</p>
+            }
+          </div>
+        )
+      }
+    }
+
+    function Welcome() {
+      throw new Error('boom')
+    }
+
+    ReactDOM.render(
+      <EroorBoundary />,
+      document.getElementById('root')
+    )
+  </script>
+</body>
+</html>

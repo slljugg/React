@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+  <script src="redux.js"></script>
+  <script src="immer.umd.production.min.js"></script>
+  <script src="react-redux.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    var { produce } = immer
+    var { connect, Provider } = ReactRedux
+    var state = {
+      showing:'all',
+      todos: [{
+        content:'eat',
+        done:false
+      },{
+        content:'drink',
+        done:true
+      }]
+    }
+    
+    var mutations = {
+      addTodo: produce((state,action) => {
+        state.todos.push({
+          content:action.todoText,
+          done:false
+        })
+      }),
+      deleteTodo: produce((state,action) => {
+        state.todos.splice(action.idx, 1)
+      }),
+      changeTodo: produce((state,action) => {
+        state.todos[action.idx].done = !state.todos[action.idx].done
+      }),
+      toggleAllStatus: produce((state,action) => {
+        if(state.todos.every(it => it.done)) {
+          state.todos.forEach(it => {
+            it.done = false
+          })
+        } else {
+          state.todos.forEach(it => {
+            it.done = true
+          })
+        }
+      })
+    }
+    
+    var store = Redux.createStore((state, action) => {
+      var mutation = mutations[action.type]
+      if(mutation) {
+        return mutation(state,action)
+      } else {
+        return state
+      }
+    },state)
+    
+    const TodoItem = connect(state =>{
+      return {}
+      }, dispatch => {
+        return {
+          deleteTodo: (idx) => dispatch({type:'deleteTodo', idx}),
+          changeTodo: (idx) => dispatch({type:'changeTodo', idx})
+        }
+      }) (function TodoItem(props) {
+        return (
+          <li>
+            <input type="checkbox" checked={props.todo.done} onChange={() => props.changeTodo(props.idx)} />
+            <span>{ props.todo.content }</span>
+            <button onClick={() => props.deleteTodo(props.idx)}>delete</button>
+          </li>
+        )
+      })
+
+    const TodoList = connect(state =>{
+      return {
+        todos: state.todos 
+        }
+      }, dispatch => {
+        return {}
+      }) (function TodoList(props) {
+        return (
+          <ul>
+            {
+              props.todos.map((todo, idx) =>{
+                return <TodoItem key={todo.content} todo={todo} idx={idx} />
+              })
+            }  
+          </ul>
+        )
+      })
+    var TodoInput = connect(state =>{
+      return {
+        isAllCompleted: state.todos.every(it => it.done)
+      }
+    },dispatch => {
+      return {
+        toggleAllStatus: () => dispatch({type:'toggleAllStatus'}),
+        addTodo: (e) => {
+          var text = e.target.value.trim()
+          if(e.keyCode == 13 && text) {
+            dispatch({type:'addTodo',todoText:text})
+            e.target.value = ''
+          }
+        }
+      }
+    }) (function TodoInput(props) {
+      return (
+        <div>
+          <input type="checkbox" checked={props.isAllCompleted} onChange={props.toggleAllStatus} />
+          <input type="text" onKeyUp={props.addTodo} />
+        </div>
+      )
+    })
+    function TodoApp() {
+      return (
+        <Provider store={store}>
+          <div>
+            <TodoInput />
+            <TodoList />
+          </div>
+        </Provider>
+      )
+    }
+
+    ReactDOM.render(
+      <div>
+        <TodoApp />  
+      </div>,
+      document.getElementById('root')
+    )
+  </script>
+</body>
+</html>

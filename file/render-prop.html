@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    class MouseTracker extends React.Component{
+      constructor(props) {
+        super(props)
+        this.state = {
+          pos: {
+            x:0,
+            y:0
+          }
+        }
+      }
+      mouseMove = e => {
+          this.setState({
+            pos:{
+              x:e.clientX,
+              y:e.clientY
+            }
+          })
+        }
+      componentDidMount() {
+        window.addEventListener('mousemove',this.mouseMove)
+      }
+      componentWillUnmount() {
+        window.removeEventListener('mousemove',this.mouseMove)
+      }
+      render() {
+        return this.props.render(this.state.pos)
+      }
+    }
+    function App() {
+      return (
+        <div>
+        <MouseTracker render={pos => {
+          return <Position pos={ pos } />
+        }} />
+      </div>
+      )
+    }
+    function Position(props) {
+      return <div>{props.pos.x} - {props.pos.y}</div>
+    }
+    ReactDOM.render(
+      <App />,
+      document.getElementById('root')
+    )
+  </script>
+</body>
+</html>

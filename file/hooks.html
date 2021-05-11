@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    var { useState, useEffect, useContext, useCallback } = React
+
+    function App(props) {  
+      var [count, setCount] = useState(0)
+      var [name, setName] = useState('')
+      function inc() {
+        setCount(count + 1)
+      } 
+      function dec() {
+        setCount(count - 1)
+      }
+      // function changeName(e) {
+      //   setName(e.target.value)
+      // }
+      useEffect(() => {
+        document.title = count
+        var id = setTimeout(() => {
+          setCount(count + 1)
+        },3000)
+        // 让主页标题跟随count
+        return () => {
+          clearTimeout(id)
+        }
+        // 当执行其他操作更新时先取消id的操作，待更新完成后继续改操作
+      },[count])
+      //useEffect函数返回的第二个参数里面 设置变量参数与否可以改变id里的变量
+      return (
+        <div>
+          <input type="text" value={name} onChange={ (e) => setName(e.target.value)} /> <br />  
+          <button onClick={ dec }>-</button>
+          <span>{ count }</span>
+          <button onClick={ inc }>+</button>
+        </div>
+      )
+    }
+    
+    ReactDOM.render(
+      <div>
+        <App />
+      </div>,
+      document.getElementById('root')
+    );
+
+  </script>
+</body>
+</html>

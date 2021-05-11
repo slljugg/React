@@ -1,0 +1,49 @@
+  const TodoList = connect(state =>{
+    return {
+      todos: state.todos 
+      }
+    }, dispatch => {
+      return {
+        foo: () => {
+          dispatch({type:'addTodo', todoText:'hello' + Math.random()})
+        }
+      }
+    }) (function TodoList(props) {
+    return (
+      <ul onClick={ props.foo }>
+        {
+          props.todos.map((todo, idx) =>{
+            return <TodoItem key={todo.content} todo={todo} idx={idx} />
+          })
+        }  
+      </ul>
+    )
+  })
+  修改为以下
+
+
+  function TodoList(props) {
+    return (
+      <ul onClick={ props.foo }>
+        {
+          props.todos.map((todo, idx) =>{
+            return <TodoItem key={todo.content} todo={todo} idx={idx} />
+          })
+        }  
+      </ul>
+    )
+  }
+  function mapStateProps(state) {
+    return {
+      todos: state.todos 
+      }
+    }
+
+    function mapDispatchProps(dispatch) {
+      return {
+        foo: () => {
+          dispatch({type:'addTodo', todoText:'hello' + Math.random()})
+        }
+      }
+    }
+    export default connect(mapStateProps,mapDispatchProps)(TodoList)

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    var { useState, useEffect, useContext, useCallback } = React
+
+    var ColorContext = React.createContext()
+    var AgeContext = React.createContext()
+    function App() {
+      var [color, setColor] = useState('red')
+      var [age, setAge] = useState(20)
+      return (
+        <ColorContext.Provider value={color}>
+          <AgeContext.Provider value={age}>
+            <Foo />
+          </AgeContext.Provider>
+        </ColorContext.Provider>
+      )
+    }
+
+    function Foo() {
+      return <Fbz />
+    }
+    function Fbz() {
+      return <Count />
+    }
+
+    function Count(props) {  
+      var [count, setCount] = useState(0)
+      var [name, setName] = useState('')
+      var color = useContext(ColorContext)
+      var age = useContext(AgeContext)
+      function inc() {
+        setCount(count + 1)
+      } 
+      function dec() {
+        setCount(count - 1)
+      }
+      // function changeName(e) {
+      //   setName(e.target.value)
+      // }
+      return (
+        <div>
+          <p>{color} - {age}</p>
+          <input type="text" value={name} onChange={ (e) => setName(e.target.value)} /> <br />  
+          <button onClick={ dec }>-</button>
+          <span>{ count }</span>
+          <button onClick={ inc }>+</button>
+        </div>
+      )
+    }
+    
+    ReactDOM.render(
+      <div>
+        <App />
+      </div>,
+      document.getElementById('root')
+    );
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="react.development.js"></script>
+  <script src="react-dom.development.js"></script>
+  <script src="babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // var MyUserContext = React.createContext(null)
+    // class App extends React.Component{
+    //   constructor(props){
+    //     super(props)
+    //     this.state = {
+    //       user:{
+    //         name:'damiao'
+    //       }
+    //     }
+    //   }
+      
+    //   render() {
+    //     return (
+    //       <MyUserContext.Provider value={this.state.user}>
+    //         <div>
+    //           <Foo />
+    //         </div>
+    //       </MyUserContext.Provider>
+    //     )
+    //   }
+    // }
+
+    // function Foo() {
+    //   return <Bar />
+    // }
+    // function Bar() {
+    //   return <Baz />
+    // }
+
+    // class Baz extends React.Component{
+    //   static contextType = MyUserContext
+    //   render() {
+    //     return (
+    //       <div>{this.context.name}</div>
+    //     )
+    //   }
+    // }
+    var MyContext = React.createContext(null)
+    class App extends React.Component{
+      constructor(props) {
+        super(props)
+        this.state = {
+          user:{
+            name:'damiao'
+          }
+        }
+      }
+      render() {
+        return (
+          <MyContext.Provider value={this.state.user}>
+          <div>
+            <Baz />  
+          </div>
+          </MyContext.Provider>
+        )
+      }
+    }
+    class Baz extends React.Component{
+      static contextType = MyContext
+      render() {
+        return <div>{this.context.name}</div>
+      }
+    }
+    ReactDOM.render(
+      <App />,
+      document.getElementById('root')
+    )
+    
+  </script>
+</body>
+</html>
